@@ -165,7 +165,7 @@ export const updateEmployeeStatus = async (req, res) => {
 
 export const updateEmployee = async (req, res) => {
     try {
-        const { email, fullName, phoneNumber, position, experience, declaration, status } = req.body;
+        const { email, fullName, phoneNumber, position, experience, declaration, status, department } = req.body;
 
         // Validate input
         if (!email) {
@@ -191,6 +191,7 @@ export const updateEmployee = async (req, res) => {
         if (position) employee.position = position;
         if (experience) employee.experience = experience;
         if (declaration !== undefined) employee.declaration = declaration;
+        if (department) employee.department = department;
 
         // Validate and update status
         const allowedStatuses = ["new", "scheduled", "ongoing", "selected", "rejected"];
@@ -375,6 +376,34 @@ export const updateEmployeeAttendanceById = async (req, res) => {
             data: employee
         });
 
+    } catch (err) {
+        Logger.error(err.message);
+        let statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        let message = "Internal Server Error";
+
+        if (err instanceof AppError) {
+            statusCode = err.statusCode;
+            message = err.message;
+        }
+
+        return res.status(statusCode).json({
+            message,
+            success: false,
+            code: statusCode
+        });
+    }
+};
+
+export const getPresentEmployees = async (req, res) => {
+    try {
+        // Fetch employees with attendanceStatus of "present"
+        const employees = await Employee.find({ attendanceStatus: "present" });
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            count: employees.length,
+            employees
+        });
     } catch (err) {
         Logger.error(err.message);
         let statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
