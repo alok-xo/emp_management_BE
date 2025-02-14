@@ -8,26 +8,29 @@ export const protect = async (req, res, next) => {
         req.headers.authorization.startsWith('Bearer')
     ) {
         try {
-            token = req.headers.authorization.split(' ')[2];
+            token = req.headers.authorization.split(' ')[1];
+
+            if (!token) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Not authorized, no token provided',
+                });
+            }
 
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
             req.user = decoded;
-
             next();
         } catch (error) {
-            res.status(401).json({
+            return res.status(401).json({
                 success: false,
                 message: 'Not authorized, token failed',
                 error: error.message
             });
         }
-    }
-
-    if (!token) {
-        res.status(401).json({
+    } else {
+        return res.status(401).json({
             success: false,
-            message: 'Not authorized, no token',
+            message: 'Not authorized, no authorization header',
         });
     }
 };
