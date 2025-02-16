@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/submit", protect, upload.single("resume"), createEmployee);
 router.put("/update_status", protect, updateEmployeeStatus);
 router.put("/update_employee", upload.single("resume"), updateEmployee);
-router.delete("/delete_employee/:id", deleteEmployee);
+router.delete("/delete_employee", deleteEmployee);
 router.get("/employees", protect, getAllEmployees);
 router.put("/updateAttendance/:id", protect, updateEmployeeAttendanceById);
 router.get("/employees/present", getPresentEmployees);

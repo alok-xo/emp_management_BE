@@ -52,7 +52,7 @@ const EmployeeSchema = new mongoose.Schema({
     attendanceStatus: {
         type: String,
         enum: ["present", "absent", "leave"],
-        default: "present"
+        default: "absent"
     }
 }, {
     collection: "Employees",

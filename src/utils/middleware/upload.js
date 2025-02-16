@@ -3,12 +3,10 @@ import path from "path";
 import fs from "fs";
 
 // Define the storage path
-const uploadDir = "uploads/resumes";
+const uploadDir = path.join("uploads", "resumes");
 
 // Ensure the directory exists
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+fs.mkdirSync(uploadDir, { recursive: true });
 
 // Configure Multer storage
 const storage = multer.diskStorage({
@@ -16,7 +14,8 @@ const storage = multer.diskStorage({
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
+        const uniqueSuffix = `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`;
+        cb(null, uniqueSuffix);
     }
 });
 
@@ -34,14 +33,16 @@ const fileFilter = (req, file, cb) => {
     if (allowedMimeTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new Error("Only PDF, DOC, DOCX, JPG, and PNG files are allowed!"), false);
+        cb(new Error("❌ Only PDF, DOC, DOCX, JPG, and PNG files are allowed!"), false);
     }
 };
 
+// Initialize Multer middleware
 const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 });
 
+// Export the middleware
 export default upload;

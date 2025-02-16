@@ -235,18 +235,18 @@ export const updateEmployee = async (req, res) => {
 
 export const deleteEmployee = async (req, res) => {
     try {
-        const { id } = req.params; // Extract ID from URL params
+        const { email } = req.body; // Extract ID from URL params
 
         // Validate input
-        if (!id) {
+        if (!email) {
             return res.status(StatusCodes.BAD_REQUEST).json({
-                message: "Employee ID is required",
+                message: "Employee email is required",
                 success: false
             });
         }
 
         // Find and delete the Employee by ID
-        const deletedEmployee = await Employee.findByIdAndDelete(id);
+        const deletedEmployee = await Employee.findOneAndDelete(email);
 
         if (!deletedEmployee) {
             return res.status(StatusCodes.NOT_FOUND).json({
